@@ -1,0 +1,73 @@
+.page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-spinner {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .loading-text {
+    font-size: 13px;
+  }
+}
+
+/* Add these dark mode styles to your PageLoading.css file */
+
+/* Dark mode for the main container */
+.dark .page-loading {
+  background-color: rgb(17 24 39); /* gray-900 */
+}
+
+/* Dark mode for the loading text */
+.dark .loading-text {
+  color: rgb(209 213 219); /* gray-300 */
+}
+
+/* Dark mode for the spinner */
+.dark .loading-spinner {
+  border-color: rgb(55 65 81); /* gray-700 */
+  border-top-color: rgb(129 140 248); /* indigo-400 */
+}
