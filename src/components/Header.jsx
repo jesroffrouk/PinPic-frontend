@@ -10,11 +10,12 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL
 export default function Header() {
   const Navigate = useNavigate()
   const user = useSelector((state) => state.auth.user)
+  console.log(user)
   const navItems = [
     { name: "Home", to: "/" },
     { name: "About", to: "/about" },
     { name: "Upload", to: "/upload" },
-    { name: 'Vault', to: "/Vault" }
+    { name: 'Vault', to: "/vault" }
   ]
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,7 +34,6 @@ export default function Header() {
       }
     })
     const result = await response.json()
-    console.log(result)
     if (!result.success) {
       Navigate('/login')
     }

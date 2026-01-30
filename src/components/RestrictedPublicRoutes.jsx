@@ -14,7 +14,7 @@ export default function RestrictedPublicRoutes(){
             const result = await response.json()
             console.log(result)
             // just checking if it will give id of current logged in user or not and if does no routing to login page
-            if(result.id){
+            if(result.success){
                 console.log('you cannot access restricted public sites')
                 navigate('/')
             }
