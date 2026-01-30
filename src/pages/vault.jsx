@@ -2,6 +2,7 @@ import { useState,useEffect } from "react"
 import { User, ArrowBigUpDash , Share2 ,Image } from "lucide-react"
 import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
+import { useLazyGetImagesQuery } from "../lib/features/apiSlice"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -26,32 +27,27 @@ function Vault() {
   const [imageData, setImageData] = useState(null)
   const [loader,setLoader] = useState(false)
   const {location,error} = useLocation()
-
-  const handleAsync = async() => {
-      const response = await fetch(`${BASE_URL}/img/all?latitude=${location.latitude}&longitude=${location.longitude}`,{
-          method: 'GET',
-          credentials: 'include'
-      })
-      const result = await response.json()
-      console.log(result)
-      if(result.error){
-          console.log(result.error)
-          return
-      }
-      setLoader(false)
-      setImageData(result)
-  }
+  const [trigger,{data}] = useLazyGetImagesQuery();
+  // change imagedata and vote logic after adding new vote system and rtk query for that too
   
     useEffect(()=>{
         // check if location is not null then run our function
         if(location?.latitude && location?.longitude){
-            handleAsync()
+            // handleAsync()
+            // loading won't work for this case as it's not in await.
+            setLoader(true)
+            trigger(location)
+            setLoader(false)
         }
     },[location.latitude,location.longitude])
+    useEffect(()=> {
+      if (data){
+        setImageData(data)
+      }
+    },[data])
 
     // upvote logic
     const toggleLike = async( imgid , upvoted) => {
-      console.log(upvoted)
       const request = await fetch(`${BASE_URL}/img/upvotes`,{
         method: 'POST',
         credentials: 'include',

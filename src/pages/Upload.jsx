@@ -2,8 +2,9 @@ import { useState } from "react"
 import { Upload, MapPin, Camera, Loader , Share2 } from "lucide-react"
 import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
+import { useSetImagesMutation } from "../lib/features/apiSlice"
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL
+// const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 export default function UploadPage(){
     const [uploadImageFile,setUploadImageFile] = useState(null)
@@ -12,6 +13,8 @@ export default function UploadPage(){
     const [loader,setLoader] = useState(false) 
     const {location,error} = useLocation()
 
+    const [trigger,{data}] = useSetImagesMutation();
+
     const handleUploadData = async()=>{
         setLoader(true)
         const formData = new FormData()
@@ -19,18 +22,20 @@ export default function UploadPage(){
         formData.append("captions",caption)
         formData.append("latitude",location.latitude)
         formData.append("longitude",location.longitude)
-        const response = await fetch(`${BASE_URL}/img`,{
-            method: 'POST',
-            credentials: 'include',
-            body: formData
-        })
-        const result = await response.json()
-        if(result.error){
-            setLoader(false)
-            console.log(error)
-            return
-        }
-        console.log("image upload successfully:", result)
+        await trigger(formData)
+        console.log(data)
+        // const response = await fetch(`${BASE_URL}/img`,{
+        //     method: 'POST',
+        //     credentials: 'include',
+        //     body: formData
+        // })
+        // const result = await response.json()
+        // if(result.error){
+        //     setLoader(false)
+        //     console.log(error)
+        //     return
+        // }
+        // console.log("image upload successfully:", result)
         // clear form
         setUploadImagePreview(null)
         setUploadImageFile(null)
