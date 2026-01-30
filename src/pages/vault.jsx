@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react"
-import { User, Heart , Share2 ,Image } from "lucide-react"
+import { User, ArrowBigUpDash , Share2 ,Image } from "lucide-react"
 import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
 
@@ -60,7 +60,7 @@ function Vault() {
         },
         body: JSON.stringify({
           imgid: imgid,
-          react_type: upvoted ? 'dislike' : 'like'
+          react_type: upvoted ? 'none' : 'upvoted'
         }
       )
       })
@@ -120,7 +120,7 @@ return (
                         className="bg-white/90 dark:bg-gray-800/90 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex flex-col items-center gap-1 min-w-[3rem]" 
                         onClick={() => toggleLike(images.id, images.upvoted)}
                       >
-                        <Heart 
+                        <ArrowBigUpDash 
                           className={`w-5 h-5 transition-colors ${
                             images.upvoted 
                               ? 'text-red-500 fill-red-500' 
@@ -131,9 +131,6 @@ return (
                           {images.upvotes_count > 999 ? `${(images.upvotes_count / 1000).toFixed(1)}k` : images.upvotes_count}
                         </span>
                       </button> 
-                      <button className="bg-white/90 dark:bg-gray-800/90 p-2 rounded-full hover:bg-white dark:hover:bg-gray-800 transition-colors">
-                        <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                      </button>
                     </div>
                   </div>
                   {/* Content */}

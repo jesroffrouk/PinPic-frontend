@@ -50,11 +50,11 @@ const router = createBrowserRouter(
         <Suspense fallback={<PageLoader/>}>
           <Upload />
         </Suspense>} />
-      </Route> 
       <Route path='vault' element={
         <Suspense fallback={<PageLoader/>}>
           <Vault />
         </Suspense>} /> 
+      </Route> 
     </Route>
     </>
   )
