@@ -3,6 +3,7 @@ import { User, ArrowBigUpDash , Share2 ,Image } from "lucide-react"
 import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
 import { useLazyGetImagesQuery } from "../lib/features/apiSlice"
+import { Link } from "react-router"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -46,41 +47,6 @@ function Vault() {
       }
     },[data])
 
-    // upvote logic
-    const toggleLike = async( imgid , upvoted) => {
-      const request = await fetch(`${BASE_URL}/img/upvotes`,{
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          imgid: imgid,
-          react_type: upvoted ? 'none' : 'upvoted'
-        }
-      )
-      })
-
-      const result = await request.json()
-      if (!result.success) {
-          console.log(result.error)
-          return
-      }
-      setImageData(prev =>
-        prev.map(img =>
-        img.id === imgid
-          ? {
-              ...img,
-              upvoted: !img.upvoted,
-              upvotes_count: img.upvoted
-                ? img.upvotes_count - 1
-                : img.upvotes_count + 1,
-            }
-          : img
-    )
-  );
-    }
-
 return (
     <>
     {error && <Error error={error} />}
@@ -103,37 +69,21 @@ return (
                   key={images.id}
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] border border-white/20 dark:border-gray-700/50 group"
                 >
+                  <Link to={`/story/${images.id}`}>
                   {/* Image */}
                   <div className="aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 relative">
                     <img
                       src={images.imgurl || "/placeholder.svg"}
-                      alt={images.captions}
+                      alt={images.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                     <button 
-                        className="bg-white/90 dark:bg-gray-800/90 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex flex-col items-center gap-1 min-w-[3rem]" 
-                        onClick={() => toggleLike(images.id, images.upvoted)}
-                      >
-                        <ArrowBigUpDash 
-                          className={`w-5 h-5 transition-colors ${
-                            images.upvoted 
-                              ? 'text-red-500 fill-red-500' 
-                              : 'text-gray-600 dark:text-gray-300'
-                          }`}
-                        />
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-200 leading-none">
-                          {images.upvotes_count > 999 ? `${(images.upvotes_count / 1000).toFixed(1)}k` : images.upvotes_count}
-                        </span>
-                      </button> 
-                    </div>
                   </div>
                   {/* Content */}
                   <div className="p-5">
-                    {/* Caption */}
+                    {/* Title */}
                     <p className="text-gray-800 dark:text-gray-200 font-medium mb-4 line-clamp-2 leading-relaxed">
-                      {images.captions}
+                      {images.title}
                     </p>
                     {/* Author */}
                     <div className="flex items-center gap-3 text-sm">
@@ -144,6 +94,7 @@ return (
                       <div className="ml-auto text-xs text-gray-500 dark:text-gray-400">2h ago</div>
                     </div>
                   </div>
+                  </Link>
                 </div>
               ))}
             </div>

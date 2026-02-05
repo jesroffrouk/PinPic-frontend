@@ -11,6 +11,7 @@ import PageLoader from './components/PageLoader.jsx'
 import { DarkModeProvider } from './contexts/Darkmode.jsx'
 import { socket } from './socket/socket.js'
 import { sendNotification } from './helper/notification.js'
+import Story from './pages/Story.jsx'
 
 const About = React.lazy(()=> (import('./pages/About.jsx')))
 const Upload = React.lazy(()=> (import('./pages/Upload.jsx')))
@@ -47,13 +48,17 @@ const router = createBrowserRouter(
     <Route element={<ProtectedRoutes />}>
       <Route path='' element={<Home />} />
       <Route path='upload' element={
-        <Suspense fallback={<PageLoader/>}>
-          <Upload />
-        </Suspense>} />
+          <Suspense fallback={<PageLoader/>}>
+            <Upload />
+          </Suspense>} />
       <Route path='vault' element={
-        <Suspense fallback={<PageLoader/>}>
-          <Vault />
-        </Suspense>} /> 
+          <Suspense fallback={<PageLoader/>}>
+            <Vault />
+          </Suspense>} /> 
+      <Route path='story/:id' element={
+          <Suspense fallback={<PageLoader/>}>
+            <Story />
+          </Suspense>} /> 
       </Route> 
     </Route>
     </>

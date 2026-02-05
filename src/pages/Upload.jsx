@@ -9,7 +9,8 @@ import { useSetImagesMutation } from "../lib/features/apiSlice"
 export default function UploadPage(){
     const [uploadImageFile,setUploadImageFile] = useState(null)
     const [uploadImagePreview,setUploadImagePreview] = useState(null)
-    const [caption,setCaption] = useState('')
+    const [title,setTitle] = useState('')
+    const [content,setContent] = useState('')
     const [loader,setLoader] = useState(false) 
     const {location,error} = useLocation()
 
@@ -19,7 +20,8 @@ export default function UploadPage(){
         setLoader(true)
         const formData = new FormData()
         formData.append("image",uploadImageFile)
-        formData.append("captions",caption)
+        formData.append("title",title)
+        formData.append("content",content)
         formData.append("latitude",location.latitude)
         formData.append("longitude",location.longitude)
         await trigger(formData)
@@ -39,7 +41,8 @@ export default function UploadPage(){
         // clear form
         setUploadImagePreview(null)
         setUploadImageFile(null)
-        setCaption('')
+        setTitle('')
+        setContent('')
         setLoader(false)
     }
 
@@ -141,25 +144,36 @@ return (
                 </div>
               )}
 
-              {/* Caption Input */}
+              {/* Title Input */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Caption</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Title</label>
                 <textarea
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="Share what's happening... Tell us about this moment!"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Add a Title"
                   className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 resize-none transition-all duration-200 bg-gray-50/50 dark:bg-gray-700/50 hover:bg-white dark:hover:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   rows={4}
                 />
                 <div className="text-right text-sm text-gray-500 dark:text-gray-400 mt-2">
-                  {caption.length}/280 characters
+                  {title.length}/280 characters
                 </div>
+              </div>
+              {/* Content Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Content</label>
+                <textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Share what's happening... Tell us about the story behind it!"
+                  className="w-full px-4 py-4 border-2 border-gray-200 dark:border-gray-600 rounded-2xl focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 resize-none transition-all duration-200 bg-gray-50/50 dark:bg-gray-700/50 hover:bg-white dark:hover:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  rows={4}
+                />
               </div>
 
               {/* Upload Button */}
               <button
                 onClick={handleUploadData}
-                disabled={!uploadImagePreview || !caption.trim() || loader}
+                disabled={!uploadImagePreview || !title.trim() || loader}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-700 text-white py-4 px-8 rounded-2xl font-semibold hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {loader ? (
