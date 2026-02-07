@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Add this to your main CSS file (e.g., src/index.css or src/App.css) */

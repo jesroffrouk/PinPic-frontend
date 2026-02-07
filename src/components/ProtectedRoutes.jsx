@@ -10,7 +10,7 @@ export default function ProtectedRoutes(){
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const location = useLocation()
-    const publicRoutes = ['/','/about']
+    const publicRoutes = ['/']
     const isMatch = publicRoutes.includes(location.pathname)
 
     useEffect(()=>{

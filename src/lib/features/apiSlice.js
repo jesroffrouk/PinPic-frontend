@@ -7,6 +7,12 @@ export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({baseUrl: `${BASE_URI}`}),
     tagTypes: ['Comment'],
     endpoints: (build) => ({
+        getUserProfile: build.query({
+            query: () => ({
+                url: `auth/profile`,
+                credentials: 'include'
+            }),
+        }),
         getImages: build.query({
             query: (location) => ({
                 url: `/img/all?latitude=${location.latitude}&longitude=${location.longitude}`,
@@ -60,4 +66,4 @@ export const apiSlice = createApi({
 })
 
 
-export const { useLazyGetImagesQuery,useSetImagesMutation,useLazyGetStoryByIdQuery,useSetUpvotesMutation, useGetCommentsQuery,useSetCommentsMutation } = apiSlice;
+export const { useLazyGetImagesQuery,useSetImagesMutation,useLazyGetStoryByIdQuery,useSetUpvotesMutation, useGetCommentsQuery,useSetCommentsMutation,useGetUserProfileQuery } = apiSlice;

@@ -3,6 +3,7 @@ import { Upload, MapPin, Camera, Loader , Share2 } from "lucide-react"
 import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
 import { useSetImagesMutation } from "../lib/features/apiSlice"
+import MapView from "../components/MapView"
 
 // const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -190,6 +191,9 @@ return (
               </button>
             </div>
           </div>
+
+          {/* Map view */}
+          {location.latitude && location.longitude && <MapView location={location} /> }
         </div>
       </div>
     </>
