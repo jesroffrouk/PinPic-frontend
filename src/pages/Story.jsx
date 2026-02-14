@@ -5,16 +5,17 @@ import { useParams } from 'react-router';
 import { ArrowBigUpDash } from 'lucide-react';
 import CommentsSection from '../components/CommentsSection';
 import StorySkeleton from '../components/StorySkeleton';
+import ErrorInline from '../components/error/ErrorInline';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 export default function Story() {
   const [showFullImage, setShowFullImage] = useState(false);
-  const {location,error} = useLocation()
+  const {location} = useLocation()
   const {id: postId} = useParams()
   const [loader,setLoader] = useState(true)
   // just make an rtk call for this story pageid
-  const [triggerGetStory,{data: story}] = useLazyGetStoryByIdQuery();
+  const [triggerGetStory,{data: story,error}] = useLazyGetStoryByIdQuery();
   const [triggerUpvotes] = useSetUpvotesMutation();
   const [localState,setLocalState] = useState({
     upvoted: null,
@@ -43,6 +44,7 @@ export default function Story() {
 
   },[story?.upvoted,story?.upvoted_count])
 
+  // convert it to RTK Query
   useEffect(()=> {
     const handleAsync = async() => {
       const request = await fetch(`${BASE_URL}/img/visitors`,{
@@ -183,6 +185,7 @@ export default function Story() {
 
       </article>
     </>)}
+    {error && <ErrorInline error={error?.message ?? "Internal Server Error"} />}
     </div>
     </>
   );

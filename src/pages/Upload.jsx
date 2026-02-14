@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { Upload, MapPin, Camera, Loader , Share2 } from "lucide-react"
-import Error from "../components/Error"
 import useLocation from "../lib/hooks/useLocation"
 import { useSetImagesMutation } from "../lib/features/apiSlice"
 import MapView from "../components/MapView"
+import ErrorInline from "../components/error/ErrorInline"
 
 // const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -13,9 +13,9 @@ export default function UploadPage(){
     const [title,setTitle] = useState('')
     const [content,setContent] = useState('')
     const [loader,setLoader] = useState(false) 
-    const {location,error} = useLocation()
+    const {location} = useLocation()
 
-    const [trigger,{data}] = useSetImagesMutation();
+    const [trigger,{data,error}] = useSetImagesMutation();
 
     const handleUploadData = async()=>{
         setLoader(true)
@@ -62,7 +62,6 @@ export default function UploadPage(){
 
 return (
      <>
-      {error && <Error error={error} />}
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
           {/* Header */}
@@ -171,6 +170,8 @@ return (
                 />
               </div>
 
+              {/* Inline Error handling */}
+              {error && <ErrorInline error={error?.message ?? "Internal Server Error"} />}
               {/* Upload Button */}
               <button
                 onClick={handleUploadData}

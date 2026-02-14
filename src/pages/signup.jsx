@@ -2,6 +2,7 @@ import { useNavigate , Link} from "react-router"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { setUser } from "../lib/features/authSlice"
+import { setGlobalError } from "../lib/features/errorSlice"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -56,6 +57,7 @@ export default function Signup(){
             setError(errorMessages[result.code] || "unknown server error")
         } catch (error) {
             console.log(error)
+            dispatch(setGlobalError("Network failed.. Try again later"))
         }
     }
 

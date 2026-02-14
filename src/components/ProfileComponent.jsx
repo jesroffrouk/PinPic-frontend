@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Camera, Check, X, Edit2 } from 'lucide-react';
 import { useGetUserProfileQuery } from '../lib/features/apiSlice';
+import ErrorInline from './error/ErrorInline';
 
 // this profile page needs work on it. 
 // first i want to fetch details from backend like details. 
@@ -59,6 +60,8 @@ export default function ProfilePage() {
           <div className="h-32 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 relative">
             <div className="absolute inset-0 bg-black opacity-20"></div>
           </div>
+          {/* inline Error Handling */}
+          {error && <ErrorInline error={error?.message ?? "Internal Server Error"} />}
 
           {/* Profile Section */}
           <div className="px-6 pb-6 sm:px-8 sm:pb-8">

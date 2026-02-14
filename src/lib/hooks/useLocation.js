@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react"
+import {setGlobalError} from "../features/errorSlice"
+import { useDispatch } from "react-redux"
 
 export default function useLocation(){
+    const dispatch = useDispatch()
     const [location,setLocation] = useState({
         latitude: null,
         longitude: null
     })
-    const [error,setError] = useState(null)
 
     useEffect(()=>{ 
     let watchId = navigator.geolocation.watchPosition((position)=>{
@@ -15,7 +17,7 @@ export default function useLocation(){
     },(error)=>{
     // need to provide proper error feedback if user doesnot allow location
     console.error("error getting location:" , error)
-    setError("didnot get the location of the device")
+    dispatch(setGlobalError('error getting location...turn on location and try again'))
     // return error
     },{
     enableHighAccuracy: true,
@@ -25,5 +27,5 @@ export default function useLocation(){
     return () => navigator.geolocation.clearWatch(watchId);
     }
     ,[])
-    return {location,error};
+    return {location};
 }

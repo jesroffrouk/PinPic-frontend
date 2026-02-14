@@ -1,11 +1,9 @@
 import { useState,useEffect } from "react"
-import { User, ArrowBigUpDash , Share2 ,Image } from "lucide-react"
-import Error from "../components/Error"
+import { User, Image } from "lucide-react"
 import useLocation from "../lib/hooks/useLocation"
 import { useLazyGetImagesQuery } from "../lib/features/apiSlice"
 import { Link } from "react-router"
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL
+import ErrorInline from "../components/error/ErrorInline"
 
 function Loader(){
 
@@ -27,8 +25,8 @@ function Loader(){
 function Vault() {
   const [imageData, setImageData] = useState(null)
   const [loader,setLoader] = useState(false)
-  const {location,error} = useLocation()
-  const [trigger,{data}] = useLazyGetImagesQuery();
+  const {location} = useLocation()
+  const [trigger,{data,error}] = useLazyGetImagesQuery();
   // change imagedata and vote logic after adding new vote system and rtk query for that too
   
     useEffect(()=>{
@@ -49,8 +47,9 @@ function Vault() {
 
 return (
     <>
-    {error && <Error error={error} />}
     <div className="p-6 bg-theme-primary min-h-screen">
+      {/* Error Inline */}
+    {error && <ErrorInline error={error?.message ?? "Internal Server Error"} />}
     {/* Images Gallery */}
       <div className="mb-6">
         <div className="flex items-center gap-4 mb-8">

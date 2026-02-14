@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate, Link } from "react-router"
 import { useDispatch } from "react-redux"
 import { setUser } from "../lib/features/authSlice"
+import {setGlobalError} from "../lib/features/errorSlice"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -55,6 +56,7 @@ export default function Login(){
 
         } catch (error) {
             console.log(error)
+            dispatch(setGlobalError("Network failed..Try again later"))
         }
     }
 

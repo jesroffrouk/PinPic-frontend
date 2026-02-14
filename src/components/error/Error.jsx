@@ -1,4 +1,18 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { clearGlobalError } from "../../lib/features/errorSlice";
+
 export default function Error({error}) {
+    const dispatch = useDispatch()
+    // one issue: is that I am not planning to just show this error for 5 sec. I want to find a way to show as long as i can. I need to find a way
+    useEffect(()=> {
+        let timerId = setTimeout(() => {
+           dispatch(clearGlobalError()) 
+        }, 5000);
+
+        return () => clearTimeout(timerId)
+    })
+    console.log(error)
     
     return (
         <>
