@@ -66,7 +66,7 @@ export default function Login(){
 
     return (
         <>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-lg border border-slate-200">
       {/* Header */}
       <div className="px-6 py-8 text-center border-b border-slate-100">

@@ -1,5 +1,5 @@
 import {RouterProvider,createBrowserRouter,createRoutesFromElements,Route} from 'react-router'
-import Home from './pages/Home.jsx'
+import Map from './pages/Map.jsx'
 import Layout from './components/Layout.jsx'
 import Login from './pages/login.jsx'
 import Signup from './pages/signup.jsx'
@@ -13,10 +13,11 @@ import { sendNotification } from './helper/notification.js'
 import Story from './pages/Story.jsx'
 import Profile from './pages/Profile.jsx'
 import ErrorWrapper from './components/error/ErrorWrapper.jsx'
+import Vault from './pages/Vault'
 
 const About = React.lazy(()=> (import('./pages/About.jsx')))
 const Upload = React.lazy(()=> (import('./pages/Upload.jsx')))
-const Vault = React.lazy(()=>(import('./pages/vault.jsx')))
+// const Vault = React.lazy(()=>(import('./pages/vault.jsx')))
 
 function App() {
   useEffect(()=>{
@@ -42,25 +43,28 @@ const router = createBrowserRouter(
       <Route path='login' element={<Login />}></Route> 
       <Route path='signup' element={<Signup />}></Route> 
       </Route>
-      <Route element={<Layout />}>
-        <Route path='about' element={<Suspense fallback={<PageLoader/>}><About /></Suspense>} />
-        <Route element={<ProtectedRoutes />}>
-          <Route path='' element={<Home />} />
-          <Route path='profile' element={
+
+      <Route element={<ProtectedRoutes />}>
+        <Route path='profile' element={
               <Suspense fallback={<PageLoader/>}>
                 <Profile />
               </Suspense>} />
-          <Route path='upload' element={
+        <Route path='upload' element={
               <Suspense fallback={<PageLoader/>}>
                 <Upload />
               </Suspense>} />
-          <Route path='vault' element={
-              <Suspense fallback={<PageLoader/>}>
-                <Vault />
-              </Suspense>} /> 
           <Route path='story/:id' element={
               <Suspense fallback={<PageLoader/>}>
                 <Story />
+              </Suspense>} /> 
+
+      </Route>
+      <Route element={<Layout />}>
+        <Route element={<ProtectedRoutes />}>
+          <Route path='' element={<Map />} />
+          <Route path='vault' element={
+              <Suspense fallback={<PageLoader/>}>
+                <Vault />
               </Suspense>} /> 
         </Route> 
       </Route>

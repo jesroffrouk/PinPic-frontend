@@ -62,8 +62,15 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Comment']
         }),
+        getPlacesName: build.query({
+            query: (location) => ({
+                url: `/img/place?latitude=${location.latitude}&longitude=${location.longitude}`,
+                method: 'GET',
+                credentials: 'include',
+            })
+        })
     })
 })
 
 
-export const { useLazyGetImagesQuery,useSetImagesMutation,useLazyGetStoryByIdQuery,useSetUpvotesMutation, useGetCommentsQuery,useSetCommentsMutation,useGetUserProfileQuery } = apiSlice;
+export const { useLazyGetImagesQuery,useSetImagesMutation,useLazyGetStoryByIdQuery,useSetUpvotesMutation,useLazyGetCommentsQuery,useSetCommentsMutation,useGetUserProfileQuery,useLazyGetPlacesNameQuery } = apiSlice;

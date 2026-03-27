@@ -13,7 +13,6 @@ export default function useLocation(){
     let watchId = navigator.geolocation.watchPosition((position)=>{
         const {latitude, longitude} = position.coords;
         setLocation({latitude,longitude})
-        setError(null)
     },(error)=>{
     // need to provide proper error feedback if user doesnot allow location
     console.error("error getting location:" , error)

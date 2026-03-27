@@ -9,10 +9,15 @@ function MapView({location}) {
   let position = [location.latitude,location.longitude]
   return (
     <>
-    <MapContainer style={{ height: '400px', width: '100%' }} center={[location.latitude, location.longitude]} zoom={13} scrollWheelZoom={false}>
+    <MapContainer 
+    zoomControl={false}
+    style={{ height: '100%', width: '100%' }} 
+    center={[location.latitude, location.longitude]} zoom={13} 
+    scrollWheelZoom={true}
+    zoomAnimation={true}
+    >
     <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
     />
     <Circle
       center={position}
