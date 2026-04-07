@@ -14,10 +14,23 @@ export const apiSlice = createApi({
             }),
         }),
         getImages: build.query({
-            query: (location) => ({
-                url: `/img/all?latitude=${location.latitude}&longitude=${location.longitude}`,
+            query: ({nextCursor,location}) => ({
+                url: nextCursor ? `/img/all?latitude=${location.latitude}&longitude=${location.longitude}&created_at=${nextCursor.created_at}&post_id=${nextCursor.post_id}`:
+                 `/img/all?latitude=${location.latitude}&longitude=${location.longitude}`,
                 credentials: 'include'
             }),
+            serializeQueryArgs: ({endpointName}) => endpointName,
+            merge: (cache,incoming) => {
+                const existingIds = new Set(cache.data.posts.map(p => p.id));
+                        incoming.data.posts.forEach(p => {
+                            if (!existingIds.has(p.id)) {
+                            cache.data.posts.push(p);
+                            }
+                        });
+                cache.data.nextCursor = incoming.data.nextCursor;
+                cache.data.hasMore = incoming.data.hasMore;
+            },
+            forceRefetch: ({currentArg,previousArg}) => currentArg !== previousArg
         }),
         setImages: build.mutation({
             query: (formData) => ({
@@ -68,9 +81,50 @@ export const apiSlice = createApi({
                 method: 'GET',
                 credentials: 'include',
             })
+        }),
+        setCollection: build.mutation({
+            query: (postId) => ({
+                url: `/img/collection`,
+                method: 'POST',
+                credentials: 'include',
+                headers: {'Content-Type': 'application/json'},
+                body: {postId},
+            }) 
+        }),
+        getCollection: build.query({
+            query: ({nextCursor})=> ({
+                url: nextCursor ? `/img/collection?created_at=${nextCursor.created_at}&post_id=${nextCursor.id}` : 
+                `/img/collection`,
+                method: 'GET',
+                credentials: 'include'
+            }),
+            serializeQueryArgs: ({endpointName}) => endpointName,
+            merge: (cache,incoming) => {
+                const existingIds = new Set(cache.data.posts.map(p => p.id));
+                        incoming.data.posts.forEach(p => {
+                            if (!existingIds.has(p.id)) {
+                            cache.data.posts.push(p);
+                            }
+                        });
+                cache.data.nextCursor = incoming.data.nextCursor;
+                cache.data.hasMore = incoming.data.hasMore;
+            },
+            forceRefetch: ({currentArg,previousArg}) => currentArg !== previousArg
         })
     })
 })
 
 
-export const { useLazyGetImagesQuery,useSetImagesMutation,useLazyGetStoryByIdQuery,useSetUpvotesMutation,useLazyGetCommentsQuery,useSetCommentsMutation,useGetUserProfileQuery,useLazyGetPlacesNameQuery } = apiSlice;
+export const { 
+    useGetImagesQuery,
+    useLazyGetImagesQuery,
+    useSetImagesMutation,
+    useLazyGetStoryByIdQuery,
+    useSetUpvotesMutation,
+    useLazyGetCommentsQuery,
+    useSetCommentsMutation,
+    useGetUserProfileQuery,
+    useGetPlacesNameQuery, 
+    useGetCollectionQuery ,
+    useSetCollectionMutation 
+} = apiSlice;

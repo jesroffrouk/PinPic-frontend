@@ -4,11 +4,12 @@ import Background from "../components/ui/Background";
 import GoBack from "../components/ui/icons/GoBack";
 import Menu from "../components/ui/icons/Menu";
 import { useNavigate } from "react-router";
-import { useLazyGetCommentsQuery, useLazyGetStoryByIdQuery, useSetCommentsMutation, useSetUpvotesMutation } from "../lib/features/apiSlice";
+import { useLazyGetCommentsQuery, useLazyGetStoryByIdQuery, useSetCollectionMutation, useSetCommentsMutation, useSetUpvotesMutation } from "../lib/features/apiSlice";
 import { useParams } from "react-router";
 import useLocation from "../lib/hooks/useLocation";
 import { useEffect } from "react";
 import { timeAgo } from "../helper/TimeFormatter";
+import ErrorInline from "../components/error/ErrorInline";
 
 const BASE_URI = import.meta.env.VITE_BACKEND_URL
 
@@ -34,7 +35,7 @@ function formatNumber(n) {
   return n;
 }
 
-const HeroImage = ({story,upvoted,upvotesCount,handleChangeUpvote}) => (
+const HeroImage = ({story,upvoted,upvotesCount,handleChangeUpvote,handleCollection,collected}) => (
     <>
       <div className="relative w-full" style={{ height: "72vw", maxHeight: 420, minHeight: 240 }}>
         <img
@@ -125,8 +126,19 @@ const HeroImage = ({story,upvoted,upvotesCount,handleChangeUpvote}) => (
             </div>
 
             {/* bookmark */}
-            <button className="flex items-center justify-center ml-auto pl-2">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4e7ea0" strokeWidth={2}>
+            <button
+              className="flex items-center justify-center ml-auto pl-2"
+              onClick={() => handleCollection(story.id)}
+            >
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill={collected ? "#4e7ea0" : "none"}
+                stroke="#4e7ea0"
+                strokeWidth={2}
+                className="transition-all duration-200"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" />
               </svg>
             </button>
@@ -136,7 +148,7 @@ const HeroImage = ({story,upvoted,upvotesCount,handleChangeUpvote}) => (
     </>
 )
 
-const StorySection = ({story,}) => (
+const StorySection = ({story,getStoryError}) => (
     <>
      <div className="px-5 pt-7">
         {/* category tag */}
@@ -182,6 +194,9 @@ const StorySection = ({story,}) => (
             borderRadius: 2,
           }}
         />
+
+        {/* getStory Error */}
+        {getStoryError && <ErrorInline error={'Failed to retrieve Story'}/>}
 
         {/* story paragraphs */}
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -237,7 +252,7 @@ const StorySection = ({story,}) => (
     </>
 )
 
-const CommentSection = ({comments}) => (
+const CommentSection = ({comments,getCommentError}) => (
     <>
    <div
         className="px-5 pt-2 pb-6"
@@ -257,6 +272,8 @@ const CommentSection = ({comments}) => (
         >
           {comments.length} Comments
         </h2>
+        {/* GetComment Error */}
+        {getCommentError && <ErrorInline error={'Failed to retrieve Comments'} />}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {comments.map(c => (
@@ -400,19 +417,26 @@ const TopNavBar = () => {
 
 export default function StoryPage() {
   
-  const [triggerGetStory,{data: story,error}] = useLazyGetStoryByIdQuery()
-  const [triggerSetUpvotesApi,{data}] = useSetUpvotesMutation()
+  const [triggerGetStory,{data: getStoryResponse,error: getStoryError}] = useLazyGetStoryByIdQuery()
+  const story = getStoryResponse?.data?.post
+  const [triggerSetUpvotesApi] = useSetUpvotesMutation()
+  // setUpvoteError
   const [triggerSetCommentsApi] = useSetCommentsMutation()
-  const [triggerGetCommentsApi,{data: comments}] = useLazyGetCommentsQuery()
-  // const [comments, setComments] = useState();
+  // setCommentsError
+  const [triggerGetCommentsApi,{data: getCommentsResponse,error: getCommentError}] = useLazyGetCommentsQuery()
+  const comments = getCommentsResponse?.data?.comments
+
+  // collection
+  const [triggerSetCollectionApi,{error: setCollectionError}] = useSetCollectionMutation()
+
+
   const [commentText, setCommentText] = useState("");
   const [upvoted, setUpvoted] = useState(false);
+  const [collected,setCollected] = useState(false)
   const [upvotesCount, setUpvotesCount] = useState(null);
   const {location: userLocation} = useLocation()
   const {id: postId} = useParams()
 
-  console.log(comments)
-  
     useEffect(() => {
         if (userLocation.latitude && userLocation.longitude) {
           // check if postId is not string i mean it should be number
@@ -428,23 +452,26 @@ export default function StoryPage() {
     if (story) {
       setUpvoted(story.upvoted)
       setUpvotesCount(story.upvotes_count)
+      setCollected(story.collected)
     }
   },[story])
 
   useEffect(()=>{
-    // handle views
-    async function handleVisitors (postId){
-      const request = await fetch(`${BASE_URI}/img/visitors`,{
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-        body: JSON.stringify({postId})
-      })
-      const response = await request.json()
-      if (response.error){
-        console.error('error found',response.error)
+    // need to handle error in here.
+    // I can handle with redux later on
+    try {
+      async function handleVisitors (postId){
+        const request = await fetch(`${BASE_URI}/img/visitors`,{
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          credentials: 'include',
+          body: JSON.stringify({postId})
+        })
+        const response = await request.json()
+        if (response.error){
+          throw new Error(response.error)
+        }
       }
-    }
     const timerId = setTimeout(()=> {
       if(postId){
         handleVisitors(postId) 
@@ -452,6 +479,10 @@ export default function StoryPage() {
     },5000)
 
     return () => clearTimeout(timerId)
+
+    } catch (error) {
+      console.error(error)
+    }
   },[postId])
 
   function handleChangeUpvote(postId) {
@@ -467,6 +498,11 @@ export default function StoryPage() {
     if (!trimmed) return;
     triggerSetCommentsApi({comment: commentText,postid: postId})
     setCommentText("");
+  }
+
+  async function handleCollection(postId) {
+    setCollected(prev=> !prev)
+    await triggerSetCollectionApi(postId)
   }
 
 
@@ -491,8 +527,15 @@ export default function StoryPage() {
         {/* ── TITLE & STORY ── */}
               {story ? (
                   <>
-                  <HeroImage story={story} upvoted={upvoted} upvotesCount={upvotesCount} handleChangeUpvote={handleChangeUpvote} />
-                  <StorySection story={story} />
+                  <HeroImage 
+                    story={story} 
+                    upvoted={upvoted} 
+                    upvotesCount={upvotesCount} 
+                    handleChangeUpvote={handleChangeUpvote}
+                    handleCollection={handleCollection}
+                    collected={collected}
+                     />
+                  <StorySection story={story} getStoryError={getStoryError} />
                   </>
               ) : (
                   <div>
@@ -502,7 +545,7 @@ export default function StoryPage() {
   
 
         {/* ── COMMENTS SECTION ── */}
-        {comments && <CommentSection comments={comments} />}
+        {comments && <CommentSection comments={comments} getCommentError={getCommentError} />}
 
         {/* ── STICKY COMMENT BAR ── */}
         </section>

@@ -152,56 +152,16 @@ const ScannerArea = ({scanning,visibleIds,angle,tx,ty}) => (
   </>
 )
 
-const StatusArea = ({scanning,done}) => (
-  <>
-    <div className="flex items-center z-10">
-      {scanning && (
-        <span className="blink text-[11px] font-bold tracking-[3px] text-tertiary-text">
-          ● SCANNING...
-        </span>
-      )}
-      {done && !scanning && (
-        <span className="small_regular_text text-tertiary-text/80">
-          ✓ SCAN COMPLETE
-        </span>
-      )}
-    </div>
-  </>
-)
 
-const ScanButton = ({startScan,scanning,done}) => (
-  <>
-    <button
-      onClick={startScan}
-      disabled={scanning}
-      className={`
-        z-10 mt-3 px-12 py-3.5 rounded-full text-secondary-text font-extrabold text-base tracking-wide
-        transition-all duration-300
-        ${scanning
-          ? "bg-tertiary-background opacity-60 cursor-not-allowed"
-          : "bg-tertiary-background hover:scale-105 active:scale-95 cursor-pointer hover:brightness-110"}
-      `}
-      style={{
-        boxShadow: scanning
-          ? "0 4px 16px rgba(45,122,85,.3)"
-          : "0 4px 24px rgba(82,183,136,.6)",
-      }}
-    >
-      {scanning ? "Scanning…" : done ? "Scan Again" : "Start Scanning"}
-    </button>
-  </>
-)
-
-export default function Scanner({handleExit}) {
+export default function Scanner({handleExit,handleGetImages}) {
   const [scanning, setScanning]     = useState(false);
   const [visibleIds, setVisibleIds] = useState(new Set());
   const [angle, setAngle]           = useState(0);
   const rafRef      = useRef(null);
   const startRef    = useRef(null);
   const timeoutsRef = useRef([]);
-  const Navigate = useNavigate()
 
-  const startScan = () => {
+  const startScan = async() => {
     if (scanning) return;
     setScanning(true);
     setVisibleIds(new Set());
@@ -210,31 +170,35 @@ export default function Scanner({handleExit}) {
     timeoutsRef.current = [];
 
     startRef.current = performance.now();
-    const animate = (now) => {
-      const elapsed = now - startRef.current;
-      setAngle(((elapsed / SCAN_DURATION) * 360 * 1.5) % 360);
-      if (elapsed < SCAN_DURATION) {
-        rafRef.current = requestAnimationFrame(animate);
-      } else {
-        setScanning(false);
-        // if i got some images sent it to feed page otherwise just handleExit it.
-        // for now I am just routing it to feed page
-        Navigate('/vault')
-        handleExit?.()
-      }
-    };
-    rafRef.current = requestAnimationFrame(animate);
+    const apiPromise = handleGetImages()
+    await new Promise((resolve)=>{
+      const animate = (now) => {
+        const elapsed = now - startRef.current;
+        setAngle(((elapsed / SCAN_DURATION) * 360 * 1.5) % 360);
+        if (elapsed < SCAN_DURATION) {
+          rafRef.current = requestAnimationFrame(animate);
+        } else {
+          resolve()
+        }
+      };
+      rafRef.current = requestAnimationFrame(animate);
+      SCHEDULE.forEach(({ id, delay }) => {
+        const t = setTimeout(() => {
+          setVisibleIds((prev) => new Set([...prev, id]));
+        }, delay);
+        timeoutsRef.current.push(t);
+      });
+    })
 
-    SCHEDULE.forEach(({ id, delay }) => {
-      const t = setTimeout(() => {
-        setVisibleIds((prev) => new Set([...prev, id]));
-      }, delay);
-      timeoutsRef.current.push(t);
-    });
+    await apiPromise
+
+    setScanning(false)
+    handleExit?.()
+
   };
 
-  useEffect(() => () => {
-    startScan()
+  useEffect(() => {
+    startScan();
     return () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     timeoutsRef.current.forEach(clearTimeout);

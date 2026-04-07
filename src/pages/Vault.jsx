@@ -6,9 +6,13 @@ import Profile from "../components/ui/buttons/ProfileButton";
 import Background from "../components/ui/Background";
 import Contianer from "../components/ui/Container";
 import Buttons from "../components/ui/buttons/FilterButtons";
-import { useLazyGetImagesQuery, useLazyGetPlacesNameQuery } from "../lib/features/apiSlice";
+import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
 import useLocation from "../lib/hooks/useLocation";
 import { Link } from "react-router";
+import ErrorInline from "../components/error/ErrorInline";
+import ScannerAnimation from "../components/Scanner";
+import { useInfinitePostsFeed } from "../hooks/useInfiniteFeed";
+
 
 const filters = ["Most Recent", "Most Liked", "Trending"];
 
@@ -125,31 +129,30 @@ const NoImageAvailableComponent = () => (
 export default function Feed() {
   const Navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState("Most Recent");
-
-  const [imageData,setImageData] = useState(null)
-  const [trigger,{data,error}] = useLazyGetImagesQuery()
-  const [triggerGetPlaceNameApi,{data:place}] = useLazyGetPlacesNameQuery()
+//   const [showScanner,setShowScanner] = useState(false)
+  // getPlaceName Error
   const {location:userLocation} = useLocation()
 
-  const sorted = imageData ? ([...imageData].sort((a, b) =>
+  const shouldSkip = !userLocation.latitude || !userLocation.longitude
+
+  const {data: getPlaceName} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
+  const place = getPlaceName?.data?.location
+  // need to handle ERrro
+  const {posts,isFetching,isLoading,hasMore,sentinelRef} = useInfinitePostsFeed(userLocation)
+
+  //   i am sorting even recent ones which is techincal fault so fix it later on
+  const sorted = posts ? ([...posts].sort((a, b) =>
     activeFilter === "Most Liked" ? b.upvotes_count - a.upvotes_count : 0
   )): (null)
 
-  useEffect(()=> {
-    if (userLocation.latitude && userLocation.longitude) {
-        trigger(userLocation)
-        triggerGetPlaceNameApi(userLocation)
-    }
-  },[userLocation])
-
-  useEffect(()=> {
-    if (data) {
-        setImageData(data)
-    }
-  },[data])
+//   useEffect(()=>{
+//     setShowScanner(true)
+//   },[])
 
   return (
     <>
+    {/* skipping scanner for now */}
+        {/* {showScanner && <ScannerAnimation handleExit={() => setShowScanner(false)} handleGetImages={()=> {}} />} */}
         <Background>
 
         <div className="overflow-auto pb-14">
@@ -174,14 +177,17 @@ export default function Feed() {
 
             </div>
 
+            {/* getImagesError */}
+            {/* {getImagesError && <ErrorInline error={'Failed to retrive posts'} />} */}
+
             {/* card components */}
-            {imageData ? 
+            {posts ? 
                 (<>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 px-6">
                     {sorted.map((img, i) => (
                         <CardComponent key={img.id} img={img} i={i} />
-
                     ))}
+                    {hasMore && <div ref={sentinelRef} className="h-4" />}
                 </div>
                 </>):
                 (<>

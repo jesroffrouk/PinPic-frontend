@@ -7,7 +7,7 @@ import Add from "../components/ui/icons/Add";
 import ScannerAnimation from '../components/Scanner'
 import useLocation from "../lib/hooks/useLocation";
 import MapView from "../components/MapView";
-import { useLazyGetPlacesNameQuery } from "../lib/features/apiSlice";
+import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
 
 
 const PlaceNameComponent = ({place}) => (
@@ -24,23 +24,16 @@ const PlaceNameComponent = ({place}) => (
 
 export default function MapPage() {
   const Navigate = useNavigate()
-  const [showScanner,setShowScanner] = useState(false)
+  // const [showScanner,setShowScanner] = useState(false)
 
   const {location: userLocation} = useLocation()
-  const [triggerGetPlaceNameApi,{data: place}] = useLazyGetPlacesNameQuery()
-
-  useEffect(()=> {
-    if (userLocation.latitude && userLocation.longitude) {
-      triggerGetPlaceNameApi(userLocation)
-    }
-    }
-  ,[userLocation])
-  // above api call looks but you need the same in another page so create hook or something similar to user like this.
-
+  const shouldSkip = !userLocation.longitude || !userLocation.latitude
+  const {data: getPlaceResponse} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
+  const place = getPlaceResponse?.data?.location
 
   return (
 <>
-    {showScanner && <ScannerAnimation handleExit={() => setShowScanner(false)} />}
+    {/* {showScanner && <ScannerAnimation handleExit={() => setShowScanner(false)} />} */}
 
     {/* main */}
      <div className="min-h-screen overflow-hidden bg-secondary-background flex items-center justify-center">
@@ -103,7 +96,7 @@ export default function MapPage() {
                   <Add handleClick={()=> Navigate('/upload')} />
                   {/* Scan button */}
                   {/* <ScanButton /> */}
-                  <Scanner handleClick={()=> setShowScanner(true)} />
+                  <Scanner handleClick={()=> Navigate('/vault')} />
                 </div>
               </section>
             </Contianer>

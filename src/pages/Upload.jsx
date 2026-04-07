@@ -11,11 +11,13 @@ import {
   Check,
   AlignLeft,
   Maximize2,
+  Loader,
 } from "lucide-react";
 import Contianer from "../components/ui/Container";
 import Background from "../components/ui/Background";
 import useLocation from "../lib/hooks/useLocation";
 import { useSetImagesMutation } from "../lib/features/apiSlice";
+import ErrorInline from "../components/error/ErrorInline";
 
 const StoryEditor = ({storyEditorOpen,discardStory,finishStory,title,textareaRef,draftStory,setDraftStory,draftWordCount}) => (
     <>
@@ -126,7 +128,7 @@ const CoverImageUpload = ({handleDrop,setDragOver,imagePreview,fileInputRef,imag
     </>
 )
 
-const FormArea = ({title,setTitle,wordCount,openStoryEditor,storyPreview,submitted,isReady,handleSubmit,image}) => (
+const FormArea = ({title,setTitle,wordCount,openStoryEditor,storyPreview,submitted,isReady,handleSubmit,image,isUploading,imageUploadError}) => (
     <>
           <div className="relative z-10 flex flex-col gap-5 px-5 pt-6 pb-10 flex-1">
 
@@ -179,6 +181,7 @@ const FormArea = ({title,setTitle,wordCount,openStoryEditor,storyPreview,submitt
               </button>
             </div>
 
+            {imageUploadError && <ErrorInline error={'Upload Failed'} />}
             {/* Submit */}
             <div className="flex flex-col gap-2 mt-1">
               <button
@@ -192,9 +195,12 @@ const FormArea = ({title,setTitle,wordCount,openStoryEditor,storyPreview,submitt
                 disabled={!isReady}
                 onClick={handleSubmit}
               >
-                {submitted ? (
-                  <><Check size={17} strokeWidth={2.2} /> Posted successfully</>
-                ) : (
+                {isUploading ? (
+                  <><Loader size={17} strokeWidth={2.2} /> Uploading..</>
+                ) : 
+                submitted ? (
+                  <><Check size={17} strokeWidth={2.2} />  Posted successfully</>
+                ):(
                   <><Send size={16} strokeWidth={1.8} /> Publish Story</>
                 )}
               </button>
@@ -247,7 +253,9 @@ export default function UploadPage() {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
   const {location: userLocation} = useLocation() 
-  const [trigger,{data,error}] = useSetImagesMutation()
+  const [trigger,{error: imageUploadError}] = useSetImagesMutation()
+  // image upload error
+  const [isUploading,setIsUploading] = useState(false)
 
   const wordCount = story.trim() ? story.trim().split(/\s+/).length : 0;
   const draftWordCount = draftStory.trim() ? draftStory.trim().split(/\s+/).length : 0;
@@ -292,13 +300,15 @@ export default function UploadPage() {
     formdata.append('content',story)
     formdata.append('latitude',userLocation.latitude)
     formdata.append('longitude',userLocation.longitude)
+    setIsUploading(true)
     await trigger(formdata)
+    setIsUploading(false)
     // post handling
     setImage(null)
+    setImagePreview(null)
     setTitle('')
     setStory('')
     setDraftStory('')
-    setSubmitted(false)
   };
 
   const isReady = image && title.trim().length > 0;
@@ -351,6 +361,8 @@ export default function UploadPage() {
                 isReady={isReady}
                 handleSubmit={handleSubmit}
                 image={image}
+                isUploading={isUploading}
+                imageUploadError={imageUploadError}
           />
 
           {/* ── Full-screen Story Editor ── */}

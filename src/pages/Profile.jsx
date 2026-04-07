@@ -1,20 +1,12 @@
 // haven't build it's backend yet so I have to manage things by myself later on
 
-import { useState } from "react";
-import Background from "../components/ui/Background";
 import GoBack from "../components/ui/icons/GoBack";
 import Settings from "../components/ui/icons/Settings";
 import { useNavigate } from "react-router";
 import { useGetUserProfileQuery } from "../lib/features/apiSlice";
-
-const images = [
-  { id: 1, url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80", label: "Alps Summit" },
-  { id: 2, url: "https://images.unsplash.com/photo-1519451241324-20b4ea2c4220?w=400&q=80", label: "Tokyo Nights" },
-  { id: 3, url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80", label: "Maldives" },
-  { id: 4, url: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80", label: "Santorini" },
-  { id: 5, url: "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=400&q=80", label: "Patagonia" },
-  { id: 6, url: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=400&q=80", label: "Sahara" },
-];
+import ErrorInline from "../components/error/ErrorInline";
+import { useInfiniteCollectionFeed } from "../hooks/useInfiniteFeed";
+import { CollectionCardSkeleton } from "../components/loader/CollectionCardSkeleton";
 
 const AVATAR = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80";
 
@@ -166,7 +158,7 @@ const ProfileStat = () => (
     </>
 )
 
-const CollectionSection = ({liked,toggleLike}) => (
+const CollectionSection = ({posts,hasMore,sentinelRef,isLoading}) => (
     <>
         <div className="mt-6 pb-10 relative z-10">
           <div className="flex items-center justify-between px-5 mb-4">
@@ -184,9 +176,9 @@ const CollectionSection = ({liked,toggleLike}) => (
           </div>
 
           <div className="grid grid-cols-2 gap-3 px-5">
-            {images.map((img) => (
+            {posts.map((post) => (
               <div
-                key={img.id}
+                key={post.id}
                 className="relative rounded-2xl overflow-hidden"
                 style={{
                   aspectRatio: "3/4",
@@ -196,8 +188,8 @@ const CollectionSection = ({liked,toggleLike}) => (
                 }}
               >
                 <img
-                  src={img.url}
-                  alt={img.label}
+                  src={post.imgurl}
+                  alt={post.title}
                   style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                 />
                 <div
@@ -219,35 +211,22 @@ const CollectionSection = ({liked,toggleLike}) => (
                   }}
                 >
                   <span style={{ fontSize: 11, color: "#c8dff5", fontStyle: "italic", fontFamily: "'Georgia', serif" }}>
-                    {img.label}
+                    {post.title}
                   </span>
-                  <button
-                    onClick={() => toggleLike(img.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                  >
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
-                      <path
-                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
-                        stroke={liked[img.id] ? "#f87171" : "#4a7fba"}
-                        strokeWidth="1.8"
-                        fill={liked[img.id] ? "#f87171" : "rgba(37,99,235,0.1)"}
-                      />
-                    </svg>
-                  </button>
                 </div>
               </div>
             ))}
+            {hasMore && <div ref={sentinelRef} className="h-4" />}
+            {isLoading && <CollectionCardSkeleton />}
           </div>
         </div>
     </>
 )
 
 export default function ProfilePage() {
-  const [liked, setLiked] = useState({});
-  const toggleLike = (id) => setLiked((prev) => ({ ...prev, [id]: !prev[id] }));
-  const {data: userProfile} = useGetUserProfileQuery()
-
-  console.log(userProfile)
+  const {data: userProfile,error: getUserProfileError} = useGetUserProfileQuery()
+  const {posts,isFetching,isLoading,hasMore,sentinelRef} = useInfiniteCollectionFeed()
+  console.log(posts)
 
   return (
     <>
@@ -284,6 +263,7 @@ export default function ProfilePage() {
         {/* ── NAV BAR ── */}
         <NavBar />
 
+        {getUserProfileError && <ErrorInline error={'Failed to retrieve details'} />}
 
         {/* ── PROFILE PHOTO ── */}
         { userProfile && <ProfilePhoto userProfile={userProfile} /> }
@@ -295,7 +275,13 @@ export default function ProfilePage() {
 
 
         {/* ── COLLECTION ── */}
-        <CollectionSection liked={liked} toggleLike={toggleLike} />
+        <CollectionSection 
+          posts={posts} 
+          hasMore={hasMore} 
+          sentinelRef={sentinelRef}
+          isLoading={isLoading}
+           />
+
 
       </div>
     {/* </div> */}
