@@ -18,6 +18,7 @@ import Background from "../components/ui/Background";
 import useLocation from "../lib/hooks/useLocation";
 import { useSetImagesMutation } from "../lib/features/apiSlice";
 import ErrorInline from "../components/error/ErrorInline";
+import { replace, useNavigate } from "react-router";
 
 const StoryEditor = ({storyEditorOpen,discardStory,finishStory,title,textareaRef,draftStory,setDraftStory,draftWordCount}) => (
     <>
@@ -242,6 +243,8 @@ const PageHeader = () => (
 
 
 export default function UploadPage() {
+  const navigate = useNavigate()
+
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [title, setTitle] = useState("");
@@ -309,6 +312,8 @@ export default function UploadPage() {
     setTitle('')
     setStory('')
     setDraftStory('')
+    // redirect to home
+    navigate('/',{replace: true})
   };
 
   const isReady = image && title.trim().length > 0;
