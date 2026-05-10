@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { Outlet, useNavigate,useMatch } from "react-router"
+import { Outlet, useNavigate,useLocation } from "react-router"
 import { setUser } from "../lib/features/authSlice"
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
@@ -9,7 +9,9 @@ export default function ProtectedRoutes(){
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const isPublic = useMatch("/") ?? useMatch("/about")
+    const location = useLocation()
+    const publicRoutes = ['/']
+    const isMatch = publicRoutes.includes(location.pathname)
 
     useEffect(()=>{
         const handleAsync = async() => {
@@ -20,15 +22,18 @@ export default function ProtectedRoutes(){
             // i can return a authenticated boolean value too to check authenticated or not 
             const result = await response.json()
             if(!result.success){
-                if (isPublic) {
-                    return
+                if (!isMatch) {
+                    navigate('/login')
                 }
-                navigate('/login')
-            }
+                else {
+                    navigate('/home')
+                }
+            }else{
             dispatch(setUser(result.user))
+            }
         }  
         handleAsync()      
-    },[])
+    },[isMatch])
 
     return (
     <>

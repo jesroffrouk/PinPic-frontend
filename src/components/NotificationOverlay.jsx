@@ -22,7 +22,6 @@ function timeAgo(isoString) {
 
 export const NotificationOverlay = ({notifications}) => {
   const [isOpen, setIsOpen] = useState(false);
-  console.log(notifications)
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
@@ -81,7 +80,7 @@ export const NotificationOverlay = ({notifications}) => {
                 </div>
               ) : (
                 notifications.map((notification) => {
-                  const IconComponent = 'Bell';
+                  const IconComponent = Bell;
                   return (
                     <div
                       key={notification.id}

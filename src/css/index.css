@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Add this to your main CSS file (e.g., src/index.css or src/App.css) */
+
+:root {
+  /* Light mode variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --hover-bg: #f8fafc;
+  --focus-ring: #3b82f6;
+}
+
+.dark {
+  /* Dark mode variables */
+  --bg-primary: #151a28;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-primary: #475569;
+  --border-secondary: #64748b;
+  --hover-bg: #334155;
+  --focus-ring: #60a5fa;
+}
+
+/* Utility classes using CSS variables */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-tertiary { background-color: var(--bg-tertiary); }
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+.border-theme-primary { border-color: var(--border-primary); }
+.border-theme-secondary { border-color: var(--border-secondary); }
+.hover-bg-theme:hover { background-color: var(--hover-bg); }
+
+/* Transition for smooth theme switching */
+* {
+  transition: background-color 200ms ease-in-out, 
+              border-color 200ms ease-in-out, 
+              color 200ms ease-in-out;
+}
+
+
+/* global ones */
+#root {
+  font-family: "Roboto", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
+
+
+.title_name {
+  /* heading size */
+  @apply text-heading font-heading text-secondary-text leading-none tracking-tight;
+}
+
+.small_regular_text {
+  @apply text-verysmall font-bold tracking-[2px]
+}
+
+.place_muted_name {
+  /* small text size */
+  @apply text-[11px] text-white/40 mt-1 tracking-wide;
+}
+
+/* colors gradient */
+.background_gradient {
+  background-color: #050d1f;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37, 99, 235, 0.45), transparent),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(15, 40, 100, 0.6), transparent),
+    radial-gradient(ellipse 60% 50% at 90% 90%, rgba(10, 30, 80, 0.5), transparent);
+  /* @apply bg-linear-to-br from-slate-950 via-blue-900 to-slate-950 */
+}
+
+.button_shadow {
+  @apply shadow-lg shadow-blue-700/40
+}
+
+.button_gradient {
+  @apply bg-linear-to-br from-blue-500 to-indigo-600
+}
+
+/* compoennt */
+.component_background {
+  @apply rounded-lg border border-primary-border/30 bg-blue-950/40 backdrop-blur-sm hover:-translate-y-2 active:-translate-y-2  hover:shadow-2xl active:shadow-2xl hover:shadow-blue-700/30 active:shadow-blue-700/30 hover:border-primary-border active:border-primary-border transition-all duration-300
+}
+
+.scanner_title_shadow {
+  text-shadow: 0 2px 12px rgba(0,0,0,.4);
+}
+
+.labels-layer {
+  filter: invert(100%) brightness(200%);
+}
+
+
+/* keyframe animation for scanner */
+@keyframes ringBreath {
+  0%, 100% { opacity: .14; }
+  50%       { opacity: .32; }
+}
+@keyframes dotGlow {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(255,255,255,.2), 0 0 14px rgba(100,255,160,.3); }
+  50%       { box-shadow: 0 0 0 7px rgba(255,255,255,.07), 0 0 28px rgba(100,255,160,.7); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .25; }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0) rotate(-10deg); }
+  65%  { transform: scale(1.2) rotate(3deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.ring-breath { animation: ringBreath 2.5s ease-in-out infinite; }
+.dot-glow    { animation: dotGlow 2s ease-in-out infinite; }
+.blink       { animation: blink 1.1s ease-in-out infinite; }
+.pop-in      { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+@theme {
+  /* colors */
+  --color-primary-background: #fff;
+  --color-secondary-background: #000000;
+  --color-tertiary-background: #3A9AFF;
+  /* primary and secondary text color for major ones and tertiary for side text */
+  --color-primary-text: #222831;
+  --color-secondary-text: #fff;
+  --color-tertiary-text: #3A9AFF;
+  --color-muted-text: #222831;
+
+  --color-primary-border: #00F7FF;
+  /* text size */
+  --text-regular: 16px;
+  --text-heading: 32px;
+  --text-small: 14px;
+  --text-verysmall: 12px;
+  /* font weight */
+  --font-weight-regular: 400;
+  --font-weight-bold: 700;
+  --font-weight-heading: 900;
+  --font-weight-medium: 500;
+  /* some varialbes I will be using directly */
+  /* 
+   rounded: rounded-lg
+   letterspacing: tracking-tight -- for heading
+   tracking-wide -- for small text
+   lineheight: none -- for heading
+   */
+}
