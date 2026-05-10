@@ -6,10 +6,10 @@ import Menu from "../components/ui/icons/Menu";
 import { useNavigate } from "react-router";
 import { useLazyGetCommentsQuery, useLazyGetStoryByIdQuery, useSetCollectionMutation, useSetCommentsMutation, useSetUpvotesMutation } from "../lib/features/apiSlice";
 import { useParams } from "react-router";
-import useLocation from "../lib/hooks/useLocation";
 import { useEffect } from "react";
 import { timeAgo } from "../helper/TimeFormatter";
 import ErrorInline from "../components/error/ErrorInline";
+import { useSelector } from "react-redux";
 
 const BASE_URI = import.meta.env.VITE_BACKEND_URL
 
@@ -434,7 +434,7 @@ export default function StoryPage() {
   const [upvoted, setUpvoted] = useState(false);
   const [collected,setCollected] = useState(false)
   const [upvotesCount, setUpvotesCount] = useState(null);
-  const {location: userLocation} = useLocation()
+  const {cords: userLocation,loader,error: locationError} = useSelector(state=> state.location)
   const {id: postId} = useParams()
 
     useEffect(() => {

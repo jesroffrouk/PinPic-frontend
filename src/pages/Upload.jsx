@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 import Contianer from "../components/ui/Container";
 import Background from "../components/ui/Background";
-import useLocation from "../lib/hooks/useLocation";
 import { useSetImagesMutation } from "../lib/features/apiSlice";
 import ErrorInline from "../components/error/ErrorInline";
 import { replace, useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 
 const StoryEditor = ({storyEditorOpen,discardStory,finishStory,title,textareaRef,draftStory,setDraftStory,draftWordCount}) => (
     <>
@@ -255,7 +255,7 @@ export default function UploadPage() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
-  const {location: userLocation} = useLocation() 
+  const {cords: userLocation,loader,error: locationError } = useSelector(state => state.location) 
   const [trigger,{error: imageUploadError}] = useSetImagesMutation()
   // image upload error
   const [isUploading,setIsUploading] = useState(false)

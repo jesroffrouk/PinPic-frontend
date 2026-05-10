@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import ProfileButton from "../components/ui/buttons/ProfileButton";
 import Contianer from "../components/ui/Container";
 import Scanner from "../components/ui/icons/Scanner";
 import Add from "../components/ui/icons/Add";
 import ScannerAnimation from '../components/Scanner'
-import useLocation from "../lib/hooks/useLocation";
 import MapView from "../components/MapView";
 import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
+import { useSelector } from "react-redux";
+import LocationLoader from "../components/locationLoader";
 
 
 const PlaceNameComponent = ({place}) => (
@@ -26,7 +27,7 @@ export default function MapPage() {
   const Navigate = useNavigate()
   // const [showScanner,setShowScanner] = useState(false)
 
-  const {location: userLocation} = useLocation()
+  const {cords: userLocation,loader,error: locationError} = useSelector(state => state.location) 
   const shouldSkip = !userLocation.longitude || !userLocation.latitude
   const {data: getPlaceResponse} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
   const place = getPlaceResponse?.data?.location
@@ -43,7 +44,6 @@ export default function MapPage() {
         style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.07), 0 40px 100px rgba(0,0,0,0.85)' }}
       >
         {/* Map Background */}
-        
         {userLocation.latitude ? 
         (<div className="fixed inset-0 w-full h-full object-cover">
           <MapView location={userLocation} />

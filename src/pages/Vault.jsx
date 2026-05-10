@@ -1,17 +1,17 @@
 // use error inline for error handling.
 // no image available might need some improvment to match it's colors with my projects
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import Profile from "../components/ui/buttons/ProfileButton";
 import Background from "../components/ui/Background";
 import Contianer from "../components/ui/Container";
 import Buttons from "../components/ui/buttons/FilterButtons";
 import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
-import useLocation from "../lib/hooks/useLocation";
 import { Link } from "react-router";
 import ErrorInline from "../components/error/ErrorInline";
 import ScannerAnimation from "../components/Scanner";
 import { useInfinitePostsFeed } from "../hooks/useInfiniteFeed";
+import { useSelector } from "react-redux";
 
 
 const filters = ["Most Recent", "Most Liked", "Trending"];
@@ -131,19 +131,23 @@ export default function Feed() {
   const [activeFilter, setActiveFilter] = useState("Most Recent");
 //   const [showScanner,setShowScanner] = useState(false)
   // getPlaceName Error
-  const {location:userLocation} = useLocation()
+  const {cords: userLocation,loader,error: locationError } = useSelector(state => state.location) 
 
   const shouldSkip = !userLocation.latitude || !userLocation.longitude
 
   const {data: getPlaceName} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
   const place = getPlaceName?.data?.location
   // need to handle ERrro
+
   const {posts,isFetching,isLoading,hasMore,sentinelRef} = useInfinitePostsFeed(userLocation)
 
   //   i am sorting even recent ones which is techincal fault so fix it later on
-  const sorted = posts ? ([...posts].sort((a, b) =>
-    activeFilter === "Most Liked" ? b.upvotes_count - a.upvotes_count : 0
-  )): (null)
+  const sorted = useMemo(()=> {
+    if (!posts) return null
+    return [...posts].sort((a, b) =>
+        activeFilter === "Most Liked" ? b.upvotes_count - a.upvotes_count : 0
+    )
+  },[posts,activeFilter]) 
 
 //   useEffect(()=>{
 //     setShowScanner(true)

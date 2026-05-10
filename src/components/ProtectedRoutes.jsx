@@ -10,7 +10,7 @@ export default function ProtectedRoutes(){
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const location = useLocation()
-    const publicRoutes = []
+    const publicRoutes = ['/']
     const isMatch = publicRoutes.includes(location.pathname)
 
     useEffect(()=>{
@@ -24,6 +24,9 @@ export default function ProtectedRoutes(){
             if(!result.success){
                 if (!isMatch) {
                     navigate('/login')
+                }
+                else {
+                    navigate('/home')
                 }
             }else{
             dispatch(setUser(result.user))

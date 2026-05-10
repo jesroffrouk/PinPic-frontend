@@ -14,12 +14,15 @@ import Story from './pages/Story.jsx'
 import Profile from './pages/Profile.jsx'
 import ErrorWrapper from './components/error/ErrorWrapper.jsx'
 import Vault from './pages/Vault'
+import LandingPage from './pages/Landing.jsx'
+import useLocation from './lib/hooks/useLocation.js'
 
 const About = React.lazy(()=> (import('./pages/About.jsx')))
 const Upload = React.lazy(()=> (import('./pages/Upload.jsx')))
 // const Vault = React.lazy(()=>(import('./pages/vault.jsx')))
 
 function App() {
+  useLocation()
   useEffect(()=>{
     socket.on('connect',()=>{
       console.log('socket connected')
@@ -32,6 +35,7 @@ function App() {
     return () => {
       socket.off('connect')
       socket.off('notification')
+      socket.disconnect()
     }
   },[])
 
@@ -68,6 +72,7 @@ const router = createBrowserRouter(
               </Suspense>} /> 
         </Route> 
       </Route>
+      <Route path='/home' element={<LandingPage />} />
     </Route>
     </>
   )
