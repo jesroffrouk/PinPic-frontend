@@ -1,4 +1,3 @@
-// solve some issue with comments and error handling
 import { useState } from "react";
 import Background from "../components/ui/Background";
 import GoBack from "../components/ui/icons/GoBack";
@@ -9,26 +8,10 @@ import { useParams } from "react-router";
 import { useEffect } from "react";
 import { timeAgo } from "../helper/TimeFormatter";
 import ErrorInline from "../components/error/ErrorInline";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setGlobalError } from "../lib/features/errorSlice";
 
 const BASE_URI = import.meta.env.VITE_BACKEND_URL
-
-// sample Story data
-// {
-//     "id": "b5192417-17c8-407e-903a-bb2e12ebcb77",
-//     "title": "new Story",
-//     "content": "Testing story writing and other stuff for my new UI.",
-//     "imgurl": "https://res.cloudinary.com/depvcf8fx/image/upload/v1774287268/uploads/psgup20po7ndhtmwfige.png",
-//     "upvotes_count": 0,
-//     "comments_count": 0,
-//     "visitors_count": 0,
-//     "upload_date": "2026-03-23T17:34:30.142Z",
-//     "author_id": "8da295fa-c350-4492-95f2-2a934931a841",
-//     "author_name": "let",
-//     "upvoted": false
-// }
-
-// adding visitor , upvoted and comment section
 
 function formatNumber(n) {
   if (n >= 1000) return (n / 1000).toFixed(1) + "k";
@@ -416,7 +399,7 @@ const TopNavBar = () => {
 }
 
 export default function StoryPage() {
-  
+  const dispatch = useDispatch() 
   const [triggerGetStory,{data: getStoryResponse,error: getStoryError}] = useLazyGetStoryByIdQuery()
   const story = getStoryResponse?.data?.post
   const [triggerSetUpvotesApi] = useSetUpvotesMutation()
@@ -435,6 +418,9 @@ export default function StoryPage() {
   const [collected,setCollected] = useState(false)
   const [upvotesCount, setUpvotesCount] = useState(null);
   const {cords: userLocation,loader,error: locationError} = useSelector(state=> state.location)
+  if (locationError) {
+        dispatch(setGlobalError('Failure in getting Locaiton.'))
+    }
   const {id: postId} = useParams()
 
     useEffect(() => {
@@ -457,8 +443,6 @@ export default function StoryPage() {
   },[story])
 
   useEffect(()=>{
-    // need to handle error in here.
-    // I can handle with redux later on
     try {
       async function handleVisitors (postId){
         const request = await fetch(`${BASE_URI}/img/visitors`,{
@@ -480,8 +464,7 @@ export default function StoryPage() {
 
     return () => clearTimeout(timerId)
 
-    } catch (error) {
-      console.error(error)
+    } catch (error) { dispatch(setGlobalError('Network Failed!'))
     }
   },[postId])
 

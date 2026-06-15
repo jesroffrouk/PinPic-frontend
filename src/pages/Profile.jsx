@@ -133,9 +133,9 @@ const ProfileStat = () => (
           }}
         >
           {[
-            { value: "248", label: "Saved" },
-            { value: "64", label: "Visited" },
-            { value: "132", label: "Uploads" },
+            { value: "0", label: "Saved" },
+            { value: "0", label: "Visited" },
+            { value: "0", label: "Uploads" },
           ].map((stat, i) => (
             <div
               key={i}
@@ -226,7 +226,6 @@ const CollectionSection = ({posts,hasMore,sentinelRef,isLoading}) => (
 export default function ProfilePage() {
   const {data: userProfile,error: getUserProfileError} = useGetUserProfileQuery()
   const {posts,isFetching,isLoading,hasMore,sentinelRef} = useInfiniteCollectionFeed()
-  console.log(posts)
 
   return (
     <>
@@ -262,7 +261,7 @@ export default function ProfilePage() {
 
         {/* ── NAV BAR ── */}
         <NavBar />
-
+        {/* Error Inline */}
         {getUserProfileError && <ErrorInline error={'Failed to retrieve details'} />}
 
         {/* ── PROFILE PHOTO ── */}
