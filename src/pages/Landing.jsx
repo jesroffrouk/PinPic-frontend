@@ -107,7 +107,6 @@ const PhoneMockup = () => (
 );
 
 export default function LandingPage() {
-  const [email, setEmail] = useState("");
   const revealRefs = useRef([]);
 
   useEffect(() => {

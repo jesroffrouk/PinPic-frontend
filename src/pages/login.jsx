@@ -4,6 +4,7 @@ import { useNavigate,Link } from 'react-router';
 import { useDispatch } from "react-redux"
 import { setUser } from "../lib/features/authSlice"
 import {setGlobalError} from "../lib/features/errorSlice"
+import ErrorInline from '../components/error/ErrorInline';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -59,7 +60,6 @@ export default function Login() {
             })
 
         } catch (error) {
-            console.log(error)
             setIsLoading(false)
             dispatch(setGlobalError("Network failed..Try again later"))
         }
@@ -150,7 +150,9 @@ export default function Login() {
                 Forgot password?
               </Link>
             </div>
-
+            {/* Error Inline */}
+            {error && <ErrorInline error={error} />}
+            
             {/* Login Button */}
             <button
               type="submit"

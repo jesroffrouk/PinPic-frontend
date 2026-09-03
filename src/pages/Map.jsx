@@ -22,11 +22,14 @@ const PlaceNameComponent = ({place}) => (
 
 export default function MapPage() {
   const Navigate = useNavigate()
-  // const [showScanner,setShowScanner] = useState(false)
+  const dispatch = useDispatch()
 
   const {cords: userLocation,loader,error: locationError} = useSelector(state => state.location) 
+  if (locationError) {
+        dispatch(setGlobalError('Failure in getting location'))
+    }
   const shouldSkip = !userLocation.longitude || !userLocation.latitude
-  const {data: getPlaceResponse} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
+  const {data: getPlaceResponse,error: getPlaceResponseError} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
   const place = getPlaceResponse?.data?.location
 
   return (
@@ -40,6 +43,8 @@ export default function MapPage() {
         className="relative w-97.5 h-211 overflow-hidden"
         style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.07), 0 40px 100px rgba(0,0,0,0.85)' }}
       >
+        {/* Error Inline */}
+        {getPlaceResponseError && <ErrorInline error={'Error in getting locaiton name'} />}
         {/* Map Background */}
         {userLocation.latitude ? 
         (<div className="fixed inset-0 w-full h-full object-cover">
@@ -72,13 +77,6 @@ export default function MapPage() {
             </div>
           </section>
         </Contianer> 
-        {/* ── MAP PINS ── */}
-        {/* <MapPin label="GANNATH TEMPLE" emoji="🛕" style={{ top: '28%', left: '6%' }} />
-        <MapPin label="City Park" emoji="🌿" style={{ top: '54%', right: '10%' }} />
-        <MapPin label="Central Cafe" emoji="☕" style={{ top: '38%', right: '18%' }} /> */}
-
-        {/* ── PLAYER MARKER ── */}
-        {/* <PlayerMarker /> */}
 
         {/* ── BOTTOM CONTROLS ── */}
         <div className="">
