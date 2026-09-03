@@ -1,12 +1,11 @@
-// haven't build it's backend yet so I have to manage things by myself later on
-
+// Logout button in settings
 import GoBack from "../components/ui/icons/GoBack";
-import Settings from "../components/ui/icons/Settings";
 import { useNavigate } from "react-router";
 import { useGetUserProfileQuery } from "../lib/features/apiSlice";
 import ErrorInline from "../components/error/ErrorInline";
 import { useInfiniteCollectionFeed } from "../hooks/useInfiniteFeed";
 import { CollectionCardSkeleton } from "../components/loader/CollectionCardSkeleton";
+import Settings from "../components/ui/profile/Settings";
 
 const AVATAR = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80";
 
@@ -15,7 +14,7 @@ const NavBar = () => {
   return (
     <>
         <nav
-          className="flex items-center justify-between px-5 pt-12 pb-4 relative z-10"
+          className="flex items-center justify-between px-5 pt-12 pb-4 relative z-20"
           style={{ borderBottom: "1px solid rgba(37,99,235,0.12)" }}
         >
           <GoBack handleClick={()=> Navigate('/')}/>
@@ -30,7 +29,6 @@ const NavBar = () => {
           >
             Profile
           </span>
-
         <Settings />
         </nav>
     </>

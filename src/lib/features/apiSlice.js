@@ -7,6 +7,12 @@ export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({baseUrl: `${BASE_URI}`}),
     tagTypes: ['Comment'],
     endpoints: (build) => ({
+        getLogout: build.query({
+          query: () => ({
+              url: `auth/logout`,
+              credentials: 'include'
+            }),
+        }),
         getUserProfile: build.query({
             query: () => ({
                 url: `auth/profile`,
@@ -116,6 +122,7 @@ export const apiSlice = createApi({
 
 
 export const { 
+    useLazyGetLogoutQuery,
     useGetImagesQuery,
     useLazyGetImagesQuery,
     useSetImagesMutation,
