@@ -1,14 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import ProfileButton from "../components/ui/buttons/ProfileButton";
 import Contianer from "../components/ui/Container";
 import Scanner from "../components/ui/icons/Scanner";
 import Add from "../components/ui/icons/Add";
-import ScannerAnimation from '../components/Scanner'
 import MapView from "../components/MapView";
 import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
 import { useSelector } from "react-redux";
-import LocationLoader from "../components/locationLoader";
 
 
 const PlaceNameComponent = ({place}) => (

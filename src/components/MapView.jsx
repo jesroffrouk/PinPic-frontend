@@ -25,7 +25,7 @@ function MapView({location}) {
       radius={1000}>
       <Tooltip>Tooltip for CircleMarker</Tooltip>
     </Circle>
-    <Marker position={[location.latitude, location.longitude]}>
+    <Marker position={position}>
         <Popup>
         A pretty CSS3 popup. <br /> Easily customizable.
         </Popup>
