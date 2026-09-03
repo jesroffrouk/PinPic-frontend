@@ -1,3 +1,5 @@
+// use error inline for error handling
+// improve ui to loading when uplaoding..
 import { useState, useRef, useCallback } from "react";
 import {
   ImagePlus,
@@ -16,8 +18,7 @@ import Background from "../components/ui/Background";
 import { useSetImagesMutation } from "../lib/features/apiSlice";
 import ErrorInline from "../components/error/ErrorInline";
 import { replace, useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { setGlobalError } from "../lib/features/errorSlice";
+import { useSelector } from "react-redux";
 
 const StoryEditor = ({storyEditorOpen,discardStory,finishStory,title,textareaRef,draftStory,setDraftStory,draftWordCount}) => (
     <>
@@ -242,10 +243,7 @@ const PageHeader = () => (
 
 
 export default function UploadPage() {
-  // add a upload loader
-  // error handling for inline , make it specific what type of error it got
   const navigate = useNavigate()
-  const dispatch = useDispatch()
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -264,10 +262,6 @@ export default function UploadPage() {
 
   const wordCount = story.trim() ? story.trim().split(/\s+/).length : 0;
   const draftWordCount = draftStory.trim() ? draftStory.trim().split(/\s+/).length : 0;
-  
-  if (locationError) {
-       dispatch(setGlobalError('Failed in getting Location')) 
-    }
 
   const handleImageChange = useCallback((file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -375,9 +369,6 @@ export default function UploadPage() {
                 isUploading={isUploading}
                 imageUploadError={imageUploadError}
           />
-          {/* Error Inline */}
-          {imageUploadError && <ErrorInline error={'failed to upload Image'} />}
-          
 
           {/* ── Full-screen Story Editor ── */}
               <StoryEditor 

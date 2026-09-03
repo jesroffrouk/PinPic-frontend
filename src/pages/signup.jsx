@@ -5,12 +5,36 @@ import { useNavigate , Link} from "react-router"
 import { useDispatch } from "react-redux"
 import { setUser } from "../lib/features/authSlice"
 import { setGlobalError } from "../lib/features/errorSlice"
-import ErrorInline from '../components/error/ErrorInline';
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
 export default function Signup() {
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // const [validations, setValidations] = useState({
+  //   minLength: false,
+  //   hasNumber: false,
+  //   hasSpecial: false,
+  // });
+
+  // const handleChange = () => {
+  //   const { name, value } = e.target;
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+
+  //   // Password validation
+  //   if (name === 'password') {
+  //     setValidations({
+  //       minLength: value.length >= 8,
+  //       hasNumber: /\d/.test(value),
+  //       hasSpecial: /[!@#$%^&*]/.test(value),
+  //     });
+  //   }
+  // };
+
+  // const isPasswordValid = validations.minLength && validations.hasNumber && validations.hasSpecial;
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -243,9 +267,6 @@ export default function Signup() {
                 </Link>
               </label>
             </div>
-            {/* Error Inline */}
-            {error && <ErrorInline error={error} />}
-            
 
             {/* Sign Up Button */}
             <button

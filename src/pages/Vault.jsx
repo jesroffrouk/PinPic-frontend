@@ -9,9 +9,9 @@ import Buttons from "../components/ui/buttons/FilterButtons";
 import { useGetPlacesNameQuery } from "../lib/features/apiSlice";
 import { Link } from "react-router";
 import ErrorInline from "../components/error/ErrorInline";
+import ScannerAnimation from "../components/Scanner";
 import { useInfinitePostsFeed } from "../hooks/useInfiniteFeed";
-import { useDispatch, useSelector } from "react-redux";
-import { setGlobalError } from "../lib/features/errorSlice";
+import { useSelector } from "react-redux";
 
 
 const filters = ["Most Recent", "Most Liked", "Trending"];
@@ -128,17 +128,16 @@ const NoImageAvailableComponent = () => (
 
 export default function Feed() {
   const Navigate = useNavigate()
-  const dispatch = useDispatch()
   const [activeFilter, setActiveFilter] = useState("Most Recent");
-
+//   const [showScanner,setShowScanner] = useState(false)
+  // getPlaceName Error
   const {cords: userLocation,loader,error: locationError } = useSelector(state => state.location) 
-  if (locationError) {
-       dispatch(setGlobalError('Failed to get location')) 
-    }
+
   const shouldSkip = !userLocation.latitude || !userLocation.longitude
 
-  const {data: getPlaceName,error: getPlaceNameError} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
+  const {data: getPlaceName} = useGetPlacesNameQuery(userLocation,{skip: shouldSkip})
   const place = getPlaceName?.data?.location
+  // need to handle ERrro
 
   const {posts,isFetching,isLoading,hasMore,sentinelRef} = useInfinitePostsFeed(userLocation)
 
@@ -150,8 +149,14 @@ export default function Feed() {
     )
   },[posts,activeFilter]) 
 
+//   useEffect(()=>{
+//     setShowScanner(true)
+//   },[])
+
   return (
     <>
+    {/* skipping scanner for now */}
+        {/* {showScanner && <ScannerAnimation handleExit={() => setShowScanner(false)} handleGetImages={()=> {}} />} */}
         <Background>
 
         <div className="overflow-auto pb-14">
@@ -176,8 +181,8 @@ export default function Feed() {
 
             </div>
 
-            {/* Error */}
-            {getPlaceNameError && <ErrorInline error={'Failed to get your location name'} />}
+            {/* getImagesError */}
+            {/* {getImagesError && <ErrorInline error={'Failed to retrive posts'} />} */}
 
             {/* card components */}
             {posts ? 
