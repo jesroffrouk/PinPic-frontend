@@ -13,7 +13,7 @@ export default function ProtectedRoutes(){
     const publicRoutes = ['/']
     const isMatch = publicRoutes.includes(location.pathname)
     const { data , isLoading } = useGetAuthInfoQuery()
-    
+
     if (isLoading) {
       return (
         <div className="flex items-center justify-center h-screen">

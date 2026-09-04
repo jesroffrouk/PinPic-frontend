@@ -4,33 +4,32 @@ const BASE_URI = import.meta.env.VITE_BACKEND_URL
 
 export const apiSlice = createApi({
     reducerPath: 'apiSlice',
-    baseQuery: fetchBaseQuery({baseUrl: `${BASE_URI}`}),
+    baseQuery: fetchBaseQuery({
+      baseUrl: `${BASE_URI}`,
+      credentials: 'include',
+    }),
     tagTypes: ['Comment'],
     endpoints: (build) => ({
         getAuthInfo: build.query({
           query: () => ({
               url: `auth/me`,
               method: 'GET',
-              credentials: 'include'
             }),
         }),
         getLogout: build.query({
           query: () => ({
               url: `auth/logout`,
-              credentials: 'include'
             }),
         }),
         getUserProfile: build.query({
             query: () => ({
                 url: `auth/profile`,
-                credentials: 'include'
             }),
         }),
         getImages: build.query({
             query: ({nextCursor,location}) => ({
                 url: nextCursor ? `/img/all?latitude=${location.latitude}&longitude=${location.longitude}&created_at=${nextCursor.created_at}&post_id=${nextCursor.post_id}`:
                  `/img/all?latitude=${location.latitude}&longitude=${location.longitude}`,
-                credentials: 'include'
             }),
             serializeQueryArgs: ({endpointName}) => endpointName,
             merge: (cache,incoming) => {
@@ -49,14 +48,12 @@ export const apiSlice = createApi({
             query: (formData) => ({
                 url: `/img`,
                 method: 'POST',
-                credentials: 'include',
                 body: formData
             }),
         }),
         getStoryById: build.query({
             query: ({location,postId}) => ({
                 url: `img/story?latitude=${location.latitude}&longitude=${location.longitude}&postid=${postId}`,
-                credentials: 'include'
             }),
             providesTags: ['Comment']
         }),
@@ -64,7 +61,6 @@ export const apiSlice = createApi({
             query: (body) => ({
                 url: `/img/upvotes`,
                 method: 'POST',
-                credentials: 'include',
                 headers: {'Content-Type': 'application/json'},
                 body: body
             })
@@ -73,7 +69,6 @@ export const apiSlice = createApi({
             query: (postId) => ({
                 url: `/img/comments?postid=${postId}`,
                 method: 'GET',
-                credentials: 'include',
              }),
              providesTags: ['Comment']
 
@@ -82,7 +77,6 @@ export const apiSlice = createApi({
             query: (body) => ({
                 url: `/img/comments`,
                 method: 'POST',
-                credentials: 'include',
                 headers: {'Content-Type': 'application/json'},
                 body: body
             }),
@@ -92,14 +86,12 @@ export const apiSlice = createApi({
             query: (location) => ({
                 url: `/img/place?latitude=${location.latitude}&longitude=${location.longitude}`,
                 method: 'GET',
-                credentials: 'include',
             })
         }),
         setCollection: build.mutation({
             query: (postId) => ({
                 url: `/img/collection`,
                 method: 'POST',
-                credentials: 'include',
                 headers: {'Content-Type': 'application/json'},
                 body: {postId},
             }) 
@@ -109,7 +101,6 @@ export const apiSlice = createApi({
                 url: nextCursor ? `/img/collection?created_at=${nextCursor.created_at}&post_id=${nextCursor.id}` : 
                 `/img/collection`,
                 method: 'GET',
-                credentials: 'include'
             }),
             serializeQueryArgs: ({endpointName}) => endpointName,
             merge: (cache,incoming) => {
