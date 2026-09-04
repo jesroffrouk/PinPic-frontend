@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Eye, EyeOff, MapPin } from 'lucide-react';
-import { useNavigate,Link } from 'react-router';
+import { Link } from 'react-router';
 import { useDispatch } from "react-redux"
-import { setUser } from "../lib/features/authSlice"
 import {setGlobalError} from "../lib/features/errorSlice"
-
-const BASE_URL = import.meta.env.VITE_BACKEND_URL
+import { useLoginMutation } from '../lib/features/apiSlice';
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const [triggerLogin,{error: loginError}] = useLoginMutation()
+
 
     const [formData,setFormData] = useState({
         username: "",
@@ -32,32 +31,13 @@ export default function Login() {
         }
         setIsLoading(true)
         try {
-            const response = await fetch(`${BASE_URL}/auth/login`,{
-                method: 'POST',
-                credentials: "include",
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-
-            const result = await response.json()
-            // clearing formdata even if it gets error
-            setFormData({
-                username: "",
-                password: ""
-            }) 
-            if(!result.success){ 
-              setError( errorMessage[result.code] || 'unknown server error')
-              return
-            }
-            dispatch(setUser({userid: result.user.id , username: result.user.username , email: result.user.email}))
-            setError('')
-            setIsLoading(false)
-            navigate('/',{
-                replace: true
-            })
-
+          triggerLogin(JSON.stringify(formData)).unwrap();
+          if(loginError){ 
+            setError( errorMessage[loginError.code] || 'unknown server error')
+            return
+          }
+          setError('')
+          setIsLoading(false)
         } catch (error) {
             console.log(error)
             setIsLoading(false)

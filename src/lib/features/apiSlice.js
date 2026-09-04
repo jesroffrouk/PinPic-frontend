@@ -8,18 +8,29 @@ export const apiSlice = createApi({
       baseUrl: `${BASE_URI}`,
       credentials: 'include',
     }),
-    tagTypes: ['Comment'],
+    tagTypes: ['Comment','Auth'],
     endpoints: (build) => ({
+        Login: build.mutation({
+          query: (formData) => ({
+            url: 'auth/login',
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: formData
+          }),
+          invalidatesTags: ['Auth']
+        }),
         getAuthInfo: build.query({
           query: () => ({
               url: `auth/me`,
               method: 'GET',
             }),
+          providesTags: ['Auth']
         }),
-        getLogout: build.query({
+        getLogout: build.mutation({
           query: () => ({
               url: `auth/logout`,
             }),
+          invalidatesTags: ['Auth']
         }),
         getUserProfile: build.query({
             query: () => ({
@@ -120,8 +131,9 @@ export const apiSlice = createApi({
 
 
 export const { 
+    useLoginMutation,
     useGetAuthInfoQuery,
-    useLazyGetLogoutQuery,
+    useGetLogoutMutation,
     useGetImagesQuery,
     useLazyGetImagesQuery,
     useSetImagesMutation,
