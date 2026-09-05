@@ -100,6 +100,11 @@
   @apply rounded-lg border border-primary-border/30 bg-blue-950/40 backdrop-blur-sm hover:-translate-y-2 active:-translate-y-2  hover:shadow-2xl active:shadow-2xl hover:shadow-blue-700/30 active:shadow-blue-700/30 hover:border-primary-border active:border-primary-border transition-all duration-300
 }
 
+.popup_background {
+  @apply rounded-lg border border-primary-border/30 bg-blue-950/40 backdrop-blur-lg hover:-translate-y-2 active:-translate-y-2  hover:shadow-2xl active:shadow-2xl hover:shadow-blue-700/30 active:shadow-blue-700/30 hover:border-primary-border active:border-primary-border transition-all duration-300
+}
+
+
 .scanner_title_shadow {
   text-shadow: 0 2px 12px rgba(0,0,0,.4);
 }

@@ -8,7 +8,7 @@ export const apiSlice = createApi({
       baseUrl: `${BASE_URI}`,
       credentials: 'include',
     }),
-    tagTypes: ['Comment','Auth'],
+    tagTypes: ['Comment','Auth','Profile'],
     endpoints: (build) => ({
         Login: build.mutation({
           query: (formData) => ({
@@ -36,6 +36,15 @@ export const apiSlice = createApi({
             query: () => ({
                 url: `auth/profile`,
             }),
+            providesTags: ['Profile']
+        }),
+        setUserProfile: build.mutation({
+            query: (formdata) => ({
+              url: 'auth/profile',
+              method: 'POST',
+              body: formdata
+            }),
+            invalidatesTags: ['Profile']
         }),
         getImages: build.query({
             query: ({nextCursor,location}) => ({
@@ -142,6 +151,7 @@ export const {
     useLazyGetCommentsQuery,
     useSetCommentsMutation,
     useGetUserProfileQuery,
+    useSetUserProfileMutation,
     useGetPlacesNameQuery, 
     useGetCollectionQuery ,
     useSetCollectionMutation 
