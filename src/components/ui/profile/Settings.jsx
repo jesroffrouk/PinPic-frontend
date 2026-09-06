@@ -1,13 +1,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useLazyGetLogoutQuery } from "../../../lib/features/apiSlice";
+import { apiSlice, useGetLogoutMutation } from "../../../lib/features/apiSlice";
+import { useDispatch } from "react-redux";
 
 function Settings() {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const Navigate = useNavigate()
-  const [trigger,{error: logoutError}] = useLazyGetLogoutQuery()
+  const [trigger] = useGetLogoutMutation()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -19,13 +21,15 @@ function Settings() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    setOpen(false);
-    trigger();
-    if (logoutError) {
-      console.error("error in logged out");
+  const handleLogout = async() => {
+    try {
+      setOpen(false);
+      await trigger().unwrap();
+      dispatch(apiSlice.util.resetApiState());
+      Navigate('/login', { replace: true});
+    } catch (error) {
+      console.error('Logout Failed:',error)  
     }
-    Navigate('/login');
   };
 
   return (

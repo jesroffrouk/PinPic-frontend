@@ -17,7 +17,7 @@ import Vault from './pages/Vault'
 import LandingPage from './pages/Landing.jsx'
 import useLocation from './lib/hooks/useLocation.js'
 
-const About = React.lazy(()=> (import('./pages/About.jsx')))
+// const About = React.lazy(()=> (import('./pages/About.jsx')))
 const Upload = React.lazy(()=> (import('./pages/Upload.jsx')))
 // const Vault = React.lazy(()=>(import('./pages/vault.jsx')))
 

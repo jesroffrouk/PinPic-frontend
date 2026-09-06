@@ -6,8 +6,10 @@ import ErrorInline from "../components/error/ErrorInline";
 import { useInfiniteCollectionFeed } from "../hooks/useInfiniteFeed";
 import { CollectionCardSkeleton } from "../components/loader/CollectionCardSkeleton";
 import Settings from "../components/ui/profile/Settings";
+import { useState } from "react";
+import ImageForm from "../components/ui/profile/ImageForm";
 
-const AVATAR = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80";
+// const AVATAR = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80";
 
 const NavBar = () => {
   const Navigate = useNavigate()
@@ -35,8 +37,27 @@ const NavBar = () => {
 )
 }
 
-const ProfilePhoto = ({userProfile}) => (
+const ProfilePhoto = ({userProfile}) =>  {
+  const [isOpen,setIsOpen] = useState(false);
+  const openModal = () => {
+      // setError("");
+      setIsOpen(true);
+    };
+
+  
+  const closeModal = () => {
+    setIsOpen(false);
+    // setIsDragging(false);
+    // setPreview(null);
+    // setFileName("");
+    // setError("");
+  };
+
+  return (
     <>
+      {/* open form */}
+      {isOpen && <ImageForm closeModal={closeModal} />}
+      {/* profileInfo  */}
         <div className="flex flex-col items-center pt-7 pb-2 relative z-10 px-6">
           <div className="relative">
             <div
@@ -50,7 +71,7 @@ const ProfilePhoto = ({userProfile}) => (
               <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#030d1e" }} />
             </div>
             <img
-              src={AVATAR}
+              src={userProfile.profile_url}
               alt="Profile"
               style={{
                 width: 88,
@@ -88,6 +109,7 @@ const ProfilePhoto = ({userProfile}) => (
               fontFamily: "inherit",
               cursor: "pointer",
             }}
+            onClick={openModal}
           >
             Change Photo
           </button>
@@ -120,6 +142,7 @@ const ProfilePhoto = ({userProfile}) => (
         </div>
     </>
 )
+}
 
 const ProfileStat = () => (
     <>
